@@ -22,9 +22,9 @@ log "Created temporary directory: $TEMP_DIR"
 
 # Clone the repository
 log "Cloning repository..."
-git clone https://github.com/msshashank1997/Building-CI-CD-Pipeline-Tool.git "$TEMP_DIR/repo"
+git pull origin main
 if [ $? -ne 0 ]; then
-    log "Failed to clone repository"
+    log "Failed to pull latest changes from repository"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
