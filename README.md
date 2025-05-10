@@ -37,10 +37,12 @@ sudo systemctl enable nginx
 
 ```bash
 # Install Git
-sudo apt install -y git  # Ubuntu
-# Install Python and dependencies
-sudo apt install -y python3 python3-pip  # Ubuntu
-# Install required Python packages
+sudo apt install -y git 
+sudo apt install -y python3 python3-pip
+```
+
+```
+git clone https://github.com/yourusername/your-repo-name.git
 pip3 install requests
 ```
 
