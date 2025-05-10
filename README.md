@@ -89,6 +89,10 @@ Follow these steps to test that your automated deployment works correctly:
    python3 check_commits.py
    ```
 
+   ![image](https://github.com/user-attachments/assets/cf5e3ef3-78db-495c-ac4d-d7e1afa43a0a)
+
+   ![image](https://github.com/user-attachments/assets/44b9ca00-63a7-43ba-af05-0663d56a3dac)
+
 ## 2. Make a Test Change
 
 1. Modify the `index.html` file on your local machine:
