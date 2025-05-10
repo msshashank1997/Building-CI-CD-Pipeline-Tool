@@ -15,7 +15,6 @@ log() {
 }
 
 log "Starting deployment..."
-log "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 
 # Create a temporary directory
 TEMP_DIR=$(mktemp -d)
@@ -23,27 +22,30 @@ log "Created temporary directory: $TEMP_DIR"
 
 # Clone the repository
 log "Cloning repository..."
-git pull origin main
+git clone https://github.com/msshashank1997/Building-CI-CD-Pipeline-Tool.git "$TEMP_DIR/repo"
 if [ $? -ne 0 ]; then
-    log "Failed to pull latest changes from repository"
+    log "Failed to clone repository"
     rm -rf "$TEMP_DIR"
     exit 1
 fi
 
-# Copy website files to web server directory
+# Copy website files to web directory
 log "Copying files to web directory..."
-# Using a single sudo command to avoid the "cd command not found" error
-sudo cp -r "$TEMP_DIR/repo/"* /var/www/html/
+# Add echo for debugging
+echo "Source directory contents:"
+ls -la "$TEMP_DIR/repo/"
 
-if [ $? -ne 0 ]; then
-    log "Failed to copy files to web directory"
-    rm -rf "$TEMP_DIR"
-    exit 1
-fi
+# Try using sudo with password configured for non-interactive use
+sudo cp -r "$TEMP_DIR/repo/"* /var/www/html/ || {
+    log "Regular sudo failed, trying alternative method..."
+    # Alternative approach - copy to temp location and use sudo to move
+    cp -r "$TEMP_DIR/repo/"* "$TEMP_DIR/webfiles/"
+    sudo mv "$TEMP_DIR/webfiles/"* /var/www/html/
+}
 
 # Clean up temporary directory
 log "Cleaning up..."
-rm -rf "$TEMP_DIR"
+sudo rm -rf "$TEMP_DIR"
 
 # Restart web server
 log "Restarting Nginx..."

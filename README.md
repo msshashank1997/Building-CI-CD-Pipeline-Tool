@@ -118,7 +118,7 @@ Follow these steps to test that your automated deployment works correctly:
 
 2. Check the deployment logs:
    ```bash
-   cat /var/log/deploy.log
+   cat ../logs/deploy.log
    ```
 
 3. Visit your website in a browser and verify the changes are visible
@@ -129,8 +129,8 @@ If the changes don't appear:
 
 1. Check the logs:
    ```bash
-   cat /var/log/commit_checker.log
-   cat /var/log/deploy.log
+   cat ../logs/commit_checker.log
+   cat ../logs/deploy.log
    ```
 
 2. Verify permissions:
