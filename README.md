@@ -81,6 +81,7 @@ Follow these steps to test that your automated deployment works correctly:
 2. Verify the cron job is set up:
    ```bash
    crontab -l
+   ./setup_cron.sh
    ```
 
 3. Check that the Python script can access GitHub:
