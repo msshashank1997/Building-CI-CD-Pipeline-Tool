@@ -15,6 +15,7 @@ log() {
 }
 
 log "Starting deployment..."
+log "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 
 # Create a temporary directory
 TEMP_DIR=$(mktemp -d)
