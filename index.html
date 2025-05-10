@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI-CD Pipeline Tool</title>
+    <title>My Automated CI/CD Project</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to the CI-CD Pipeline Tool</h1>
-    <p>This is a simple HTML project for demonstrating a CI-CD pipeline.</p>
+    <div class="container">
+        <h1>CI/CD Pipeline Demo</h1>
+        <p>This page is automatically deployed when changes are pushed to GitHub.</p>
+        <p>Last updated: <span id="timestamp"></span></p>
+    </div>
+
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
 </body>
 </html>
