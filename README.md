@@ -39,11 +39,19 @@ sudo systemctl enable nginx
 # Install Git
 sudo apt install -y git 
 sudo apt install -y python3 python3-pip
+sudo apt install -y git python3 python3-full python3-venv
 ```
 
 ```
-git clone https://github.com/yourusername/your-repo-name.git
+# Clone repository
+git clone https://github.com/msshashank1997/Building-CI-CD-Pipeline-Tool.git
+cd Building-CI-CD-Pipeline-Tool/scripts
+
+python3 -m venv venv
+source venv/bin/activate
+
 pip install -r requirements.txt
+sudo chmod 777 check_commits.py deploy.sh setup_cron.sh
 ```
 
 ## Configure File Permissions
@@ -77,7 +85,7 @@ Follow these steps to test that your automated deployment works correctly:
 
 3. Check that the Python script can access GitHub:
    ```bash
-   python3 scripts/check_commits.py
+   python3 check_commits.py
    ```
 
 ## 2. Make a Test Change

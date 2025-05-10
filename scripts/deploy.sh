@@ -1,56 +1,58 @@
 #!/bin/bash
 
-# Configuration
-REPO_URL="https://github.com/your-github-username/your-repo-name.git"
-BRANCH="main"
-TEMP_DIR="/tmp/website-deployment"
-WEB_ROOT="/var/www/html"  # Nginx default web root
-LOG_FILE="/var/log/deploy.log"
+# File paths
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+LOGS_DIR="$PROJECT_DIR/logs"
+LOG_FILE="$LOGS_DIR/deploy.log"
 
-# Ensure log file exists
-touch $LOG_FILE
+# Create logs directory if it doesn't exist
+mkdir -p "$LOGS_DIR"
 
+# Log function
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a $LOG_FILE
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
 log "Starting deployment..."
 
-# Create temp directory if it doesn't exist
-if [ ! -d "$TEMP_DIR" ]; then
-    mkdir -p "$TEMP_DIR"
-    log "Created temporary directory: $TEMP_DIR"
-fi
+# Create a temporary directory
+TEMP_DIR=$(mktemp -d -t website-deployment.XXXXXX)
+log "Created temporary directory: $TEMP_DIR"
 
-# Navigate to temp directory
-cd "$TEMP_DIR" || { log "Failed to navigate to $TEMP_DIR"; exit 1; }
-
-# Clone or pull latest code
-if [ -d ".git" ]; then
-    log "Repository exists. Pulling latest changes..."
-    git pull origin $BRANCH || { log "Git pull failed"; exit 1; }
-else
-    log "Cloning the repository..."
-    git clone --branch $BRANCH $REPO_URL . || { log "Git clone failed"; exit 1; }
-fi
-
-# Copy files to web root (excluding .git and scripts directory)
-log "Copying files to web root..."
-rsync -av --exclude='.git' --exclude='scripts' ./ $WEB_ROOT/ || { log "Failed to copy files"; exit 1; }
-
-# Set correct permissions
-log "Setting permissions..."
-chown -R www-data:www-data $WEB_ROOT || { log "Failed to set permissions"; exit 1; }
-
-# Test Nginx configuration and reload
-log "Testing Nginx configuration..."
-nginx -t
-if [ $? -eq 0 ]; then
-    log "Reloading Nginx..."
-    systemctl reload nginx || { log "Failed to reload Nginx"; exit 1; }
-else
-    log "Nginx configuration test failed!"
+# Clone the repository
+log "Cloning repository..."
+git clone https://github.com/msshashank1997/Building-CI-CD-Pipeline-Tool.git "$TEMP_DIR/repo"
+if [ $? -ne 0 ]; then
+    log "Failed to clone repository"
+    rm -rf "$TEMP_DIR"
     exit 1
 fi
 
+# Copy website files to web server directory
+log "Copying files to web directory..."
+cp -r "$TEMP_DIR/repo/"* /var/www/html/ 2>/dev/null || {
+    # If the above fails, try with sudo
+    log "Permission denied, trying with sudo..."
+    sudo cp -r "$TEMP_DIR/repo/"* /var/www/html/
+}
+
+if [ $? -ne 0 ]; then
+    log "Failed to copy files to web directory"
+    rm -rf "$TEMP_DIR"
+    exit 1
+fi
+
+# Clean up temporary directory
+log "Cleaning up..."
+rm -rf "$TEMP_DIR"
+
+# Restart web server (if needed)
+log "Restarting Nginx..."
+sudo systemctl restart nginx || {
+    log "Failed to restart Nginx"
+    exit 1
+}
+
 log "Deployment completed successfully!"
+exit 0
