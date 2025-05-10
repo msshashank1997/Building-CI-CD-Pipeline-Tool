@@ -17,7 +17,7 @@ log() {
 log "Starting deployment..."
 
 # Create a temporary directory
-TEMP_DIR=$(mktemp -d -t website-deployment.XXXXXX)
+TEMP_DIR=$(mktemp -d)
 log "Created temporary directory: $TEMP_DIR"
 
 # Clone the repository
@@ -31,11 +31,8 @@ fi
 
 # Copy website files to web server directory
 log "Copying files to web directory..."
-cp -r "$TEMP_DIR/repo/"* /var/www/html/ 2>/dev/null || {
-    # If the above fails, try with sudo
-    log "Permission denied, trying with sudo..."
-    sudo cp -r "$TEMP_DIR/repo/"* /var/www/html/
-}
+# Using a single sudo command to avoid the "cd command not found" error
+sudo cp -r "$TEMP_DIR/repo/"* /var/www/html/
 
 if [ $? -ne 0 ]; then
     log "Failed to copy files to web directory"
@@ -47,12 +44,14 @@ fi
 log "Cleaning up..."
 rm -rf "$TEMP_DIR"
 
-# Restart web server (if needed)
+# Restart web server
 log "Restarting Nginx..."
-sudo systemctl restart nginx || {
+sudo systemctl restart nginx
+
+if [ $? -ne 0 ]; then
     log "Failed to restart Nginx"
     exit 1
-}
+fi
 
 log "Deployment completed successfully!"
 exit 0
