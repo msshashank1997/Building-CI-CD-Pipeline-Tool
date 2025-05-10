@@ -43,7 +43,7 @@ sudo apt install -y python3 python3-pip
 
 ```
 git clone https://github.com/yourusername/your-repo-name.git
-pip3 install requests
+pip install -r requirements.txt
 ```
 
 ## Configure File Permissions
